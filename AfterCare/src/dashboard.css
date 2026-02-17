@@ -192,3 +192,63 @@
   border-radius: 8px;
   cursor: pointer;
 }
+
+.flexRow {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.wideCard {
+  flex: 1;
+  background: #e9eef5;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.statsBox {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.reminderList {
+  margin-top: 15px;
+}
+
+.reminderItem {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.rowFlex{
+  display:flex;
+  gap:20px;
+}
+
+.fixedCard{
+  width:50%;
+  height:350px;
+  overflow:hidden;
+}
+
+.medList{
+  margin-top:10px;
+  max-height:230px;
+  overflow-y:auto;
+}
+
+.medItem{
+  display:flex;
+  justify-content:space-between;
+  background:#eee;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
