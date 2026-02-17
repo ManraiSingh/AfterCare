@@ -12,7 +12,8 @@ export default function Dashboard() {
 
   const [age, setAge] = useState("");
   const [condition, setCondition] = useState("");
-
+  const [msg, setMsg] = useState("");
+  const [chat, setChat] = useState([]);
   const [status, setStatus] = useState("Calculating...");
   const [score, setScore] = useState(0);
 
@@ -29,7 +30,26 @@ export default function Dashboard() {
   const [medName, setMedName] = useState("");
   const [medTime, setMedTime] = useState("");
   const [reminders, setReminders] = useState([]);
+const sendMessage = async () => {
+  if (!msg) return;
 
+  setChat(c=>[...c,{sender:"user",text:msg}]);
+
+  const res = await fetch("http://127.0.0.1:5000/chat",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      message: msg,
+      disease: condition,
+      score: score
+    })
+  });
+
+  const data = await res.json();
+
+  setChat(c=>[...c,{sender:"bot",text:data.reply}]);
+  setMsg("");
+};
   // AUTH
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -226,16 +246,42 @@ useEffect(() => {
 
       {/* RIGHT SIDE */}
       <div className="dashboardRight">
-        <div className="profileCard">
-          <h3>PROFILE</h3>
-          <img src={user.photoURL || "https://i.pravatar.cc/150"} className="profileImg"/>
-          <h2>{user.displayName || "User"}</h2>
-          <p>Email: {user.email}</p>
-          <p>Age: {age}</p>
-          <p>Condition: {condition}</p>
-          <p>Status: {status}</p>
-        </div>
+       <div className="profileCard">
+  <h3>PROFILE</h3>
 
+  <img
+    src={user.photoURL || "https://i.pravatar.cc/150"}
+    className="profileImg"
+  />
+
+  <h2>{user.displayName || "User"}</h2>
+  <p>Email: {user.email}</p>
+  <p>Age: {age}</p>
+  <p>Condition: {condition}</p>
+  <p>Status: {status}</p>
+
+  {/* CHATBOT INSIDE PROFILE */}
+  <div className="chatbot">
+    <h4>AI Assistant</h4>
+
+    <div className="chatbox">
+      {chat.map((c, i) => (
+        <div key={i} className={`msg ${c.sender}`}>
+          {c.text}
+        </div>
+      ))}
+    </div>
+
+    <div className="chatinput">
+      <input
+        value={msg}
+        onChange={(e) => setMsg(e.target.value)}
+        placeholder="Ask about recovery..."
+      />
+      <button onClick={sendMessage}>Send</button>
+    </div>
+  </div>
+</div>
         <button className="logoutBtn" onClick={logout}>Logout</button>
       </div>
 
