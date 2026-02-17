@@ -75,7 +75,7 @@ User question:
                 "Content-Type": "application/json"
             },
             json={
-                "model": "openai/gpt-3.5-turbo",  # free & reliable
+                "model": "openai/gpt-3.5-turbo",
                 "messages": [
                     {"role": "user", "content": prompt}
                 ]
@@ -85,9 +85,15 @@ User question:
 
         result = response.json()
 
-        reply = result["choices"][0]["message"]["content"]
+        # 🔥 DEBUG PRINT
+        print("FULL RESPONSE:", result)
 
-        print("🤖 AI:", reply)
+        # ✅ SAFE PARSING
+        if "choices" in result:
+            reply = result["choices"][0]["message"]["content"]
+        else:
+            reply = "AI service busy. Try again shortly."
+            print("⚠️ OpenRouter error:", result)
 
         return jsonify({"reply": reply})
 
@@ -96,8 +102,7 @@ User question:
         return jsonify({
             "reply": "I'm having trouble right now. Please try again."
         })
-
-
+print("KEY:", OPENROUTER_KEY)
 # ================= RUN =================
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
