@@ -59,6 +59,49 @@ const sendMessage = async () => {
   setChat(c=>[...c,{sender:"bot",text:data.reply}]);
   setMsg("");
 };
+// 🎙 VOICE SUMMARY FUNCTION
+const handleVoiceSummary = () => {
+  if (!recoveryData) {
+    alert("Recovery data not loaded yet");
+    return;
+  }
+
+  const latestHR = recoveryData.hr[recoveryData.hr.length - 1];
+  const latestSpO2 = recoveryData.spo2[recoveryData.spo2.length - 1];
+  const latestActivity = recoveryData.activity[recoveryData.activity.length - 1];
+
+  let summary = "";
+
+  // Heart Rate Analysis
+  if (latestHR > 100) {
+    summary += "Your heart rate is slightly elevated. ";
+  } else if (latestHR < 60) {
+    summary += "Your heart rate is lower than normal. ";
+  } else {
+    summary += "Your heart rate is within a healthy range. ";
+  }
+
+  // SpO2 Analysis
+  if (latestSpO2 < 94) {
+    summary += "Oxygen levels are below ideal range. ";
+  } else {
+    summary += "Oxygen levels are stable. ";
+  }
+
+  // Activity Analysis
+  if (latestActivity < 30) {
+    summary += "Your activity level is low. Try light movement if advised.";
+  } else {
+    summary += "Your activity level looks good.";
+  }
+
+  // Speak using browser voice
+  const speech = new SpeechSynthesisUtterance(summary);
+  speech.rate = 1;
+  speech.pitch = 1;
+  window.speechSynthesis.speak(speech);
+
+};
   // AUTH
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -379,6 +422,22 @@ const recoveryMean = recoveryData
       />
       <button onClick={sendMessage}>Send</button>
     </div>
+    <div style={{marginTop:"10px"}}>
+  <button
+    onClick={handleVoiceSummary}
+    style={{
+      width:"100%",
+      padding:"8px",
+      borderRadius:"8px",
+      border:"none",
+      background:"#1f77ff",
+      color:"white",
+      cursor:"pointer"
+    }}
+  >
+    🎙 Voice Recovery Summary
+  </button>
+</div>
   </div>
 </div>
         <button className="logoutBtn" onClick={logout}>Logout</button>
