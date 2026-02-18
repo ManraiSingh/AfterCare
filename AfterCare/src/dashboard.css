@@ -379,3 +379,20 @@
 .chatinput button:hover {
   background: #2563eb;
 }
+
+.graphCard canvas {
+  height: 350px !important;
+}
+.graphBtns button{
+  margin-right:10px;
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#e3f2ff;
+}
+
+.graphBtns button:hover{
+  background:#1f77ff;
+  color:white;
+}

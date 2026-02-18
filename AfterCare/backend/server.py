@@ -1,5 +1,6 @@
 import os
 import requests
+import recovery
 from dotenv import load_dotenv
 from flask import request, Flask, Response, jsonify
 from flask_cors import CORS
@@ -25,7 +26,9 @@ def video():
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
 
-
+@app.route("/recovery")
+def recovery_data():
+    return jsonify(recovery.generate_recovery_data())
 # ================= STATS =================
 @app.route("/stats")
 def stats():
@@ -58,6 +61,7 @@ Patient disease: {disease}
 Recovery score: {score}/100
 
 Rules:
+- Answer only healthcare and welness related questions do not answer anything else and off topic questions
 - Only GENERAL wellness advice
 - No diagnosis
 - No medicines or dosages

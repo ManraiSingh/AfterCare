@@ -3,13 +3,22 @@ import { auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./dashboard.css";
+import {Line} from "react-chartjs-2";
+import {
+ Chart as ChartJS,
+ LineElement,
+ CategoryScale,
+ LinearScale,
+ PointElement
+} from "chart.js";
 
+ChartJS.register(LineElement,CategoryScale,LinearScale,PointElement);
 export default function Dashboard() {
   const navigate = useNavigate();
-
+  const [recoveryData,setRecoveryData]=useState(null);
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
+const [selectedMetric, setSelectedMetric] = useState("hr");
   const [age, setAge] = useState("");
   const [condition, setCondition] = useState("");
   const [msg, setMsg] = useState("");
@@ -69,6 +78,12 @@ const sendMessage = async () => {
     return () => unsub();
   }, []);
 
+
+  useEffect(()=>{
+  fetch("http://127.0.0.1:5000/recovery")
+    .then(res=>res.json())
+    .then(data=>setRecoveryData(data));
+},[]);
   // LOAD MEDS
   useEffect(() => {
     const saved = localStorage.getItem("medReminders");
@@ -170,10 +185,70 @@ useEffect(() => {
 
       <div className="dashboardLeft">
 
-        <div className="graphCard">
-          <h2>Recovery Graph</h2>
-          <h3>Recovery Score: {score}</h3>
-        </div>
+       <div className="graphCard">
+  <h2>Recovery Graph</h2>
+<div style={{marginBottom:"15px"}}>
+  <button onClick={()=>setSelectedMetric("hr")}>Heart Rate</button>
+  <button onClick={()=>setSelectedMetric("spo2")}>SpO2</button>
+  <button onClick={()=>setSelectedMetric("activity")}>Activity</button>
+</div>
+  {recoveryData && (
+  <Line
+  data={{
+    labels: recoveryData.hr.map((_, i) => i + 1),
+
+    datasets: [
+      {
+        label:
+          selectedMetric === "hr"
+            ? "Heart Rate"
+            : selectedMetric === "spo2"
+            ? "SpO2"
+            : "Activity",
+
+        data:
+          selectedMetric === "hr"
+            ? recoveryData.hr
+            : selectedMetric === "spo2"
+            ? recoveryData.spo2
+            : recoveryData.activity,
+
+        borderColor: "#1f77ff",
+        backgroundColor: "rgba(31,119,255,0.1)",
+        tension: 0.4,
+        pointRadius: 2
+      }
+    ]
+  }}
+
+  options={{
+    responsive: true,
+    maintainAspectRatio: false,
+
+    plugins:{
+      legend:{display:true}
+    },
+
+    scales:{
+      x:{
+        title:{display:true,text:"Time (samples)"}
+      },
+      y:{
+        title:{
+          display:true,
+          text:
+            selectedMetric === "hr"
+              ? "Heart Rate"
+              : selectedMetric === "spo2"
+              ? "SpO2 (%)"
+              : "Activity"
+        }
+      }
+    }
+  }}
+/>
+  )}
+</div>
 
         {/* FLEX ROW */}
         <div style={{display:"flex",gap:"20px"}}>
