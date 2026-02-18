@@ -179,7 +179,18 @@ useEffect(() => {
   };
 
   if (!user) return null;
+if (!user) return null;
 
+// 👉 ADD HERE 
+const recoveryMean = recoveryData
+  ? recoveryData.hr.map((_, i) => {
+      return (
+        (recoveryData.hr[i] +
+         recoveryData.spo2[i] +
+         recoveryData.activity[i]) / 3
+      );
+    })
+  : [];
   return (
     <div className="dashboard">
 
@@ -191,34 +202,45 @@ useEffect(() => {
   <button onClick={()=>setSelectedMetric("hr")}>Heart Rate</button>
   <button onClick={()=>setSelectedMetric("spo2")}>SpO2</button>
   <button onClick={()=>setSelectedMetric("activity")}>Activity</button>
+  <button onClick={()=>setSelectedMetric("recovery")}>Recovery</button>
 </div>
   {recoveryData && (
   <Line
   data={{
     labels: recoveryData.hr.map((_, i) => i + 1),
 
-    datasets: [
-      {
-        label:
-          selectedMetric === "hr"
-            ? "Heart Rate"
-            : selectedMetric === "spo2"
-            ? "SpO2"
-            : "Activity",
+   datasets: [
+  {
+    label:
+      selectedMetric === "hr"
+        ? "Heart Rate"
+        : selectedMetric === "spo2"
+        ? "SpO2"
+        : selectedMetric === "activity"
+        ? "Activity"
+        : "Recovery Score",
 
-        data:
-          selectedMetric === "hr"
-            ? recoveryData.hr
-            : selectedMetric === "spo2"
-            ? recoveryData.spo2
-            : recoveryData.activity,
+    data:
+      selectedMetric === "hr"
+        ? recoveryData.hr
+        : selectedMetric === "spo2"
+        ? recoveryData.spo2
+        : selectedMetric === "activity"
+        ? recoveryData.activity
+        : recoveryMean,   // ✅ THIS LINE WAS MISSING
 
-        borderColor: "#1f77ff",
-        backgroundColor: "rgba(31,119,255,0.1)",
-        tension: 0.4,
-        pointRadius: 2
-      }
-    ]
+    borderColor:
+      selectedMetric === "recovery" ? "#28a745" : "#1f77ff",
+
+    backgroundColor:
+      selectedMetric === "recovery"
+        ? "rgba(40,167,69,0.15)"
+        : "rgba(31,119,255,0.1)",
+
+    tension: 0.4,
+    pointRadius: 2
+  }
+]
   }}
 
   options={{
@@ -237,11 +259,13 @@ useEffect(() => {
         title:{
           display:true,
           text:
-            selectedMetric === "hr"
-              ? "Heart Rate"
-              : selectedMetric === "spo2"
-              ? "SpO2 (%)"
-              : "Activity"
+  selectedMetric === "hr"
+    ? "Heart Rate"
+    : selectedMetric === "spo2"
+    ? "SpO2 (%)"
+    : selectedMetric === "activity"
+    ? "Activity"
+    : "Recovery Score"
         }
       }
     }
